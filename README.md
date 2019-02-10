@@ -39,7 +39,7 @@ The environment is considered solved, when the average (over 100 episodes) of th
 
 ### Instructions
 
-Follow the instructions in `Tennis.ipynb` to get started with training your own agent!  See `maddpg_agent.py` for the learning process.
+Follow the instructions in [Tennis.ipynb](https://github.com/adityaharish/p3_collaboration_and_competition/blob/master/Tennis.ipynb) to get train your own agent!  Take a deep dive into [maddpg_agent.py](https://github.com/adityaharish/p3_collaboration_and_competition/blob/master/maddpg_agent.py) for the learning process and [model.py](https://github.com/adityaharish/p3_collaboration_and_competition/blob/master/model.py) for the network architecture.
 
 ### Approach
 
