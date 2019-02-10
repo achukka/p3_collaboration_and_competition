@@ -1,111 +1,86 @@
 ## Project 3: Collaboration and Competition
 
-This is the third project as part of Deep Reinforcement Learning course in [Udacity](https://www.udacity.com/course/deep-reinforcement-learning-nanodegree--nd893). The objective of the project is to train two agents to play tennis as long as posibble.
-
+This is the third project as part of Deep Reinforcement Learning course in [Udacity](https://www.udacity.com/course/deep-reinforcement-learning-nanodegree--nd893). The objective of the project is to train two agents to play tennis as long as possible.
 
 ---
 
 ### Problem Description
 
-For this project we worked with the [Tennis](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#tennis)
-, a two-player game where agents control rackets to bounce the ball over the net. Here the agents must bounce ball between one another while not dropping
-or sendig ball out of bounds. 
+For this project we worked with the [Tennis](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#tennis) , a two-player game where agents control rackets to bounce the ball over the net. Here the agents must bounce ball between one another while not dropping or sending ball out of bounds. 
 
 The environment is considered sovled, when the average score (over 100 episodes) is atleast 0.5.
 
 ---
 
 ### Implementation Details
-<!--
-At the heart of this approach lies an actor-critic method. Policy-gradient methods like [REINFORCE](http://www-anw.cs.umass.edu/~barto/courses/cs687/williams92simple.pdf) use Monte-Carlo esitmate.
-As a result they exhibit high variance. Value-based approaches using Temporal Difference estimates display low variance. Actor-Critic methods combine these two
-approaches and extract the best out of both worlds. They are more stable than TD estimates and at the same time need fewer samples than policy-gradient methods.
 
-An Actor-Critic method contains two neural network one for the actor and one for the critic. The actor's role is to update the policy which is then evaluted by the critc, in turn training the actor to acheive a good policy. 
+Since the above environment deals with multiple agents, I decided to solve it using Multi Agent Deep Deterministic Policy Gradient (MADDPG) introduced in this [paper](https://papers.nips.cc/paper/7217-multi-agent-actor-critic-for-mixed-cooperative-competitive-environments.pdf). MADPPG is an extension to Deep Deterministic Agent ([DDPG](https://arxiv.org/pdf/1509.02971.pdf)) where each agent would have its own copy of critic and actor. However the actor is decentralized and critic is centralized, i.e actor can see only it's states but the critic can see all the agent's states as well as actions.
 
-In order to update the policy in vanila Policy-gradient methods we do the following 
-- Accumulate rewards over the episode.
-- Compute the average them.
-- Calculate the gradient.
-- Perform gradient descent and update the policy.
+In the below image, the actors for each agents are represented in the red area, while critics are in green section.
+![img](https://github.com/adityaharish/p3_collaboration_and_competition/blob/master/MADDPG.jpg).
 
-![img](https://github.com/adityaharish/p2_continuous_control/blob/master/images/policy_gradient_update.gif)
-&nbsp;
+Refer to the [implementation details](https://github.com/adityaharish/p2_continuous_control/blob/master/Report.md#implementation-details) in continuous control for more information on DDPG.
 
-In Actor-Critic methods we use the value provided by the critic to update the actors policy.
+As in DDPG, the multi agent approach uses a common replay buffer by storing experience tuples and drawing sample independently during training.
 
-![img](https://github.com/adityaharish/p2_continuous_control/blob/master/images/actor_critic_update.gif)
-&nbsp;
+#### Network Architecture
 
-[Deep Deterministic Policy Gradient (DDPG)](https://arxiv.org/pdf/1509.02971.pdf) is the version of actor-critic method we used to solve the above environment. Here the actor generates a deterministic policy which is evaluated by the critic. Note that some of the actor-critic variants use stochastic policies. We update the critic using TD error and action learns using the following deterministic policy gradient.
-&nbsp;
+The network architecture remains almost same as previous, i.e 2 hidden layers each with dimensions. The actor takes in a state and outputs the action, where as the critic takes in (state+action) times the number of agents. We've also incorporated batch normalization in the first layer for both actor and critic.
 
-![img](https://github.com/adityaharish/p2_continuous_control/blob/master/images/DDPG%20update%20equation.gif)
+The intial weights for the first two layers are intialized uniformly random using a `fan_in` mechanism. The final layers are though are clipped between `-3e3` and `3e3`. Instead of _ReLu_, we used _tanh_ for last year. As suggested from the Slack Channel, I kept both the intialization for both the actor and critics to be similar. This helped in converging faster.
 
-In the above equation the actor is represented using a parametrized function <img src="https://github.com/adityaharish/p2_continuous_control/blob/master/images/actor_policy.gif"/> and `Q(s,a)` is the critic.
+Changing the network architecture by tweaking things like number of hidden layers and their sizes didn't improve the performance.
 
-The above update step is ran for each agent (in this case 20)at regular intervals. There are also a few more techniques that were incorporated to stabilize the training.
-
-#### Fixed Targets
-This was introduced as part of Deep Q Network that proved to be quite useful in learning and updating weights.
-Both the actor and critic would have two neural neworks (a local and a target). As with DQN we freeze the target network and learn weights for the local model. 
-
-#### Soft udpates
-In DQN, we update the target weights after every `C` steps. In DDPG we update for every step but in a soft manner, i.e 
-```math w_t = 99.99% * w_t + 0.01% w_l ``` where `w_t` is weight of target and `w_l` is weight of local. This way most of the target network weights are retained and moved slowly.
-
-#### Experience Replay
-In most of the RL techniques the adjacent states (or experience tuples) are interlinked. So our model might get biased to a certain behavior (or path) and never learn other paths. Hence it is highly necessary that our samples are independent. To acheive this purpose, we maintain a Replay Buffer of experience tuples. After a fixed number of iterations we randomly sample an experience from this buffer, calcualte the loss and eventually update the parameters. This way, we break correlations between adjacent tuples and stabilize the learning. Around the same time, it helps us re-use the experience instead of running through the environment again.
--->
 ---
 
 ### Results
 
 I used [PyTorch](https://pytorch.org/) an open source deep learning platform by facebook to implement the neural network and Udacity AWS for GPU training. Refer to the [README](https://github.com/adityaharish/p2_continuous_control) for other run time dependencies. 
 
-The Slack Channel suggested few ideas on improving the model and one of them was to use Batch Normalization. I have used it at the first layer in both the actor and critic which enhanced the learning process. Leaky ReLu (with `0.01` slope) proved to work much better than ReLu. 
-
 Note: [workspace_utils](https://github.com/adityaharish/p2_continuous_control/blob/master/workspace_utils.py) provided in the Udacity forums, helped me keep the workspace awake during the training.
 
 #### Hyper Parameters
+
+I did a fair bit of experimenting on the learning rates for both actor and critic models and found `1e-4` for actor and `1e-3` for the critic to be stable. Lower learning rates didn't took more episodes and high learning rates didn't speed up the proceedings.
+
+For noise, I `Ornstein-Uhlenbeck process` as suggested in the previous exercise. I started with an intial amount `noise_start`(1.0) and decay it by `noise_decay`(0.9) until certain time steps `noise_max_timesteps`(300000) after which the noise is turned off. I've regulated the learning by `update_frequency`, so that agents will start learning only after every one got a chance to act. The soft update parameter `tau` can also be adapted, however I found `0.001` to work fine. 
+
+One thing, I haven't quite played with is the buffer size. Increasing it might lead to faster convergence.
 
 Following is the list of hyperparamters that we used during the training
 
 | Parameter                   | Value  |
 | ----------------------------|:------:|
-| Epoch Size epsiodes         | 1000   |
+| Epsiodes                    | 4000   |
+| Epoch Size                  | 1000   |
 | First Hidden Layer          | 256    |
-| Second Hidden Layer         | 128    |
-| Third Hidden Layer (Critic) | 128    |
-| Leaky ReLu (Slope)          | 0.01 |
-| Replay Buffer Size          | 1000000 |
-| Mini Batch Size             | 1024 |
+| Second Hidden Layer         | 256    |
+| Replay Buffer Size          | 10000 |
+| Mini Batch Size             | 256 |
 | Discount Rate               | 0.99 |
 | Tau (Soft update parameter) | 0.001 |
 | Learning Rate (Actor)       | 0.0001 |
-| Learning Rate (Critic)      | 0.0003 |
+| Learning Rate (Critic)      | 0.001 |
 | Weight Decay                | 0.0001 |
 
-<!--
-You can find the models weights for [actor](https://github.com/adityaharish/p2_continuous_control/blob/master/Results/checkpoint_actor.pth) and [critic](https://github.com/adityaharish/p2_continuous_control/blob/master/Results/checkpoint_critic.pth) in the Results folder.
--->
+You can find the models weights for both actors and critics in [Models](https://github.com/adityaharish/p3_collaboration_and_competition/tree/master/Models)
+
 
 #### Observations
-<!--
-The environment was sovled in *318* epsiodes with an average score of `30.07`. The learning was too slow in the beginning and picked up during the later stages. However DDPG updates seem to much smoother than the earlier approaches we've played with as evident from the graph below.
 
-![img](https://github.com/adityaharish/p2_continuous_control/blob/master/Results/ddpg_scores.png)
+The environment was sovled in *2998* epsiodes with an average score of `0.518`. As seen from the picture below, the learning was too slow in the beginning and picked up during the later stages. 
 
-Batch Normalization could be one of the reason for smoothness in DDPG. Increasing Epoch size for each episode didn't alter the performance much. Also altering the learning rates didn't influence the training much.
--->
+![img](https://github.com/adityaharish/p3_collaboration_and_competition/blob/master/Scores.png)
+
+As expected, the collaborative aspect makes the training rough and longer. I suspect that the noise factor accounts for irregular bumps in average scores at the middle. However during the later stages (where there is no noise), I see per episode scores reaching as high as `3`, but stil the average score doesn't add upto THRESHOLD. Increasing the buffer size and batch size might help reducing the total number of episdoes, but that could be a problem in larger setting (games with more agents). We should find an effective way to communicate information between the agents.
 
 ---
 
 ### Further Improvements
-<!--
-- Using Prioritized Replay ([paper](https://arxiv.org/abs/1511.05952)) has generally shown to have been quite useful. So we could give that one a try.
-- Other algorithms like TRPO, PPO, A3C, A2C that have been discussed in the course could potentially lead to better results as well.
+
+- Instead of Replay Buffer we could try Prioritized Replay ([paper](https://arxiv.org/abs/1511.05952)).
+- Other algorithms like Proximal Policy Optimization could potentially lead to better results since the dimension is not quite high.
 - We could try [Q-prop](https://arxiv.org/abs/1611.02247) algorithm combines both off-policy and on-policy learning.
-- Clipping gradients and (hard) setting both critic and target to same set of weights might yield a better performance.
 - Optimization techniques like dropouts, early stopping and warm restarts could reduce the training time.
--->
+- Better maintenance of noise might lead to faster convergence.
+- As mentioned previously, increasing buffer size and batch size might help.    
