@@ -17,7 +17,7 @@ The environment is considered sovled, when the average score (over 100 episodes)
 Since the above environment deals with multiple agents, I decided to solve it using Multi Agent Deep Deterministic Policy Gradient (MADDPG) introduced in this [paper](https://papers.nips.cc/paper/7217-multi-agent-actor-critic-for-mixed-cooperative-competitive-environments.pdf). MADPPG is an extension to Deep Deterministic Agent ([DDPG](https://arxiv.org/pdf/1509.02971.pdf)) where each agent would have its own copy of critic and actor. However the actor is decentralized and critic is centralized, i.e actor can see only it's states but the critic can see all the agent's states as well as actions.
 
 In the below image, the actors for each agents are represented in the red area, while critics are in green section.
-![img](https://github.com/adityaharish/p3_collaboration_and_competition/blob/master/MADDPG.jpg).
+![img](https://github.com/adityaharish/p3_collaboration_and_competition/blob/master/MADDPG.jpg)
 
 Refer to the [implementation details](https://github.com/adityaharish/p2_continuous_control/blob/master/Report.md#implementation-details) in continuous control for more information on DDPG.
 
@@ -25,9 +25,9 @@ As in DDPG, the multi agent approach uses a common replay buffer by storing expe
 
 #### Network Architecture
 
-The network architecture remains almost same as previous, i.e 2 hidden layers each with dimensions. The actor takes in a state and outputs the action, where as the critic takes in (state+action) times the number of agents. We've also incorporated batch normalization in the first layer for both actor and critic.
+The network architecture remains almost same as previous, i.e 2 hidden layers each with `256` nodes. The actor takes in a state and outputs the action, where as the critic takes in (state+action) times the number of agents. We've also incorporated batch normalization in the first layer for both actor and critic.
 
-The intial weights for the first two layers are intialized uniformly random using a `fan_in` mechanism. The final layers are though are clipped between `-3e3` and `3e3`. Instead of _ReLu_, we used _tanh_ for last year. As suggested from the Slack Channel, I kept both the intialization for both the actor and critics to be similar. This helped in converging faster.
+The intial weights for the first two layers are intialized uniformly random using a `fan_in` mechanism. The final layers are though are clipped between `-3e3` and `3e3`. Instead of _ReLu_, we used _tanh_ for last year. As suggested from the Slack Channel, I kept both the intialization for both the actor and critics to be similar. This has helped in converging faster.
 
 Changing the network architecture by tweaking things like number of hidden layers and their sizes didn't improve the performance.
 
