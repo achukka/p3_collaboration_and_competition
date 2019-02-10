@@ -47,7 +47,7 @@ To solve this environemnt we used the approach of [Mutli Agent Deep Deterministi
 
 In particular, each agent has its own copy of the actor and critic. The actor observes the state of the agent alone and outputs the associated action where as the critic for each actor sees the states and action for all the actors. The training process is similar to that of DDPG, in that we use Replay Buffers, Soft updates etc.
 
-Refer to [maddpg_agent.py](https://github.com/adityaharish/p3_collaboration_and_competition/blob/master/maddpg_agent.py) for the implementation details of the multi agent and [model.py](https://github.com/adityaharish/p3_collaboration_and_competition/blob/develop/model.py) for the neural network architecture. The environment was solved in under `3000` episodes as seen in the [notebook](https://github.com/adityaharish/p3_collaboration_and_competition/blob/master/Tennis.ipynb)
+Refer to [maddpg_agent.py](https://github.com/adityaharish/p3_collaboration_and_competition/blob/master/maddpg_agent.py) for the implementation details of the multi agent and [model.py](https://github.com/adityaharish/p3_collaboration_and_competition/blob/master/model.py) for the neural network architecture. The environment was solved in under `3000` episodes as seen in the [notebook](https://github.com/adityaharish/p3_collaboration_and_competition/blob/master/Tennis.ipynb)
 
 
 
