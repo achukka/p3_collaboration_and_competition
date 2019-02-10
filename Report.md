@@ -1,7 +1,8 @@
 ## Project 3: Collaboration and Competition
 
-This is the secothirdnd project as part of Deep Reinforcement Learning course in [Udacity](https://www.udacity.com/course/deep-reinforcement-learning-nanodegree--nd893).
-The objective of the project is to train two agents to play tennis as long as posibble.
+This is the third project as part of Deep Reinforcement Learning course in [Udacity](https://www.udacity.com/course/deep-reinforcement-learning-nanodegree--nd893). The objective of the project is to train two agents to play tennis as long as posibble.
+
+
 ---
 
 ### Problem Description
